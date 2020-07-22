@@ -9,48 +9,48 @@ MESSAGE(STATUS "Project: demo")
 #设置交叉编译器
 option(ARM_CROSS_COMPILE "Arm cross compiling option" ON)
 if(ARM_CROSS_COMPILE)
-	MESSAGE(STATUS "Arm cross compiling...")
-	# 设置目标系统
-	set(CMAKE_SYSTEM_NAME Linux)
-	set(CMAKE_SYSTEM_PROCESSOR arm)
+    MESSAGE(STATUS "Arm cross compiling...")
+    # 设置目标系统
+    set(CMAKE_SYSTEM_NAME Linux)
+    set(CMAKE_SYSTEM_PROCESSOR arm)
 
-	# 设置工具链目录
-	set(TOOL_CHAIN_DIR /opt/hisi-linux/x86-arm/arm-himix200-linux)
-	set(TOOL_CHAIN_INCLUDE 
-		${TOOL_CHAIN_DIR}/include
-		)
-	set(TOOL_CHAIN_LIB 
-		${TOOL_CHAIN_DIR}/lib
-		)
+    # 设置工具链目录
+    set(TOOL_CHAIN_DIR /opt/hisi-linux/x86-arm/arm-himix200-linux)
+    set(TOOL_CHAIN_INCLUDE 
+        ${TOOL_CHAIN_DIR}/include
+        )
+    set(TOOL_CHAIN_LIB 
+        ${TOOL_CHAIN_DIR}/lib
+        )
 
-	# 设置编译器
-	set(CMAKE_C_COMPILER "arm-himix200-linux-gcc")
-	set(CMAKE_CXX_COMPILER "arm-himix200-linux-g++")
+    # 设置编译器
+    set(CMAKE_C_COMPILER "arm-himix200-linux-gcc")
+    set(CMAKE_CXX_COMPILER "arm-himix200-linux-g++")
 
-	MESSAGE(STATUS "CMAKE_C_COMPILER:" ${CMAKE_C_COMPILER})
-	MESSAGE(STATUS "CMAKE_CXX_COMPILER:" ${CMAKE_CXX_COMPILER})
-	# 设置Cmake查找主路径
-	set(CMAKE_FIND_ROOT_PATH ${TOOL_CHAIN_DIR})
+    MESSAGE(STATUS "CMAKE_C_COMPILER:" ${CMAKE_C_COMPILER})
+    MESSAGE(STATUS "CMAKE_CXX_COMPILER:" ${CMAKE_CXX_COMPILER})
+    # 设置Cmake查找主路径
+    set(CMAKE_FIND_ROOT_PATH ${TOOL_CHAIN_DIR})
 
-	set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
-	# 只在指定目录下查找库文件
-	set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
-	# 只在指定目录下查找头文件
-	set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
-	# 只在指定目录下查找依赖包
-	set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
+    set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+    # 只在指定目录下查找库文件
+    set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+    # 只在指定目录下查找头文件
+    set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+    # 只在指定目录下查找依赖包
+    set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
 
-	include_directories(
-		${TOOL_CHAIN_DIR}/include
-		)
+    include_directories(
+        ${TOOL_CHAIN_DIR}/include
+        )
 
-	set(CMAKE_INCLUDE_PATH 
-		${TOOL_CHAIN_INCLUDE}
-		)
+    set(CMAKE_INCLUDE_PATH 
+        ${TOOL_CHAIN_INCLUDE}
+        )
 
-	set(CMAKE_LIBRARY_PATH 
-		${TOOL_CHAIN_LIB}
-		)
+    set(CMAKE_LIBRARY_PATH 
+        ${TOOL_CHAIN_LIB}
+        )
 endif(ARM_CROSS_COMPILE)
 #添加头文件的路径 
 include_directories( 

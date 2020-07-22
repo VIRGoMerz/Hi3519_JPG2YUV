@@ -40,7 +40,7 @@ static HI_BOOL bMpiInit = HI_FALSE;
 
 HI_S32 Mat2IveImage(cv::Mat *src, IVE_DST_IMAGE_S *pstDst)
 {
-	if(src->cols != (HI_S32)pstDst->u32Width || src->rows != (HI_S32)pstDst->u32Height)
+    if(src->cols != (HI_S32)pstDst->u32Width || src->rows != (HI_S32)pstDst->u32Height)
     {
         printf("width or height didn't equal,line:%d\n",__LINE__);
         return -1;
@@ -55,7 +55,7 @@ HI_S32 Mat2IveImage(cv::Mat *src, IVE_DST_IMAGE_S *pstDst)
             HI_U8 *ptm = src->ptr(r);
             HI_U8 *pti = (HI_U8*)(pstDst->au64VirAddr[0] + r * pstDst->au32Stride[0]);
             memcpy(pti, ptm, pstDst->u32Width);
-			ptm = NULL;
+            ptm = NULL;
         }
     }
     else
@@ -65,10 +65,10 @@ HI_S32 Mat2IveImage(cv::Mat *src, IVE_DST_IMAGE_S *pstDst)
             HI_U8 *ptm = src->ptr(r);
             HI_U8 *pti = (HI_U8*)(pstDst->au64VirAddr[0] + 3 * r * pstDst->au32Stride[0]);
             memcpy(pti, ptm, pstDst->u32Width * 3);
-			ptm = NULL;
+            ptm = NULL;
         }
     }
-	return 0;
+    return 0;
 }
 
 
@@ -79,9 +79,9 @@ HI_S32 IveImage2Mat(IVE_SRC_IMAGE_S *pstSrc, cv::Mat *dst)
         printf("width or height didn't equal,line:%d\n",__LINE__);
         return -1;
     }
-	
+    
     dst->data = (HI_U8*)(HI_UL)pstSrc->au64VirAddr[0];
-	return 0;
+    return 0;
 }
 
 
@@ -120,7 +120,7 @@ HI_S32 SAMPLE_IVE_Or(IVE_SRC_IMAGE_S *pstSrcImg1, IVE_SRC_IMAGE_S *pstSrcImg2, I
 {
     HI_S32 s32Ret;
     IVE_HANDLE IveHandle;
-	
+    
     s32Ret = HI_MPI_IVE_Or(&IveHandle, pstSrcImg1, pstSrcImg2, pstDstImg, HI_FALSE);
     SAMPLE_CHECK_EXPR_RET(HI_SUCCESS != s32Ret,s32Ret,"Error(%#x),HI_MPI_IVE_Or failed!\n",s32Ret);
 
@@ -129,19 +129,19 @@ HI_S32 SAMPLE_IVE_Or(IVE_SRC_IMAGE_S *pstSrcImg1, IVE_SRC_IMAGE_S *pstSrcImg2, I
 
 HI_S32 SAMPLE_IVE_CCL(IVE_SRC_IMAGE_S *pstSrc, IVE_DST_MEM_INFO_S *stBlob)
 {
-	HI_S32 s32Ret;
+    HI_S32 s32Ret;
     IVE_HANDLE IveHandle;
     IVE_CCL_CTRL_S stCtrl;
-	
-	memset(&stCtrl, 0, sizeof(stCtrl));
-	stCtrl.u16InitAreaThr = 4;
+    
+    memset(&stCtrl, 0, sizeof(stCtrl));
+    stCtrl.u16InitAreaThr = 4;
     stCtrl.u16Step = 2;
     stCtrl.enMode  = IVE_CCL_MODE_8C;
-	
-	s32Ret = HI_MPI_IVE_CCL(&IveHandle, pstSrc, stBlob, &stCtrl, HI_FALSE);
+    
+    s32Ret = HI_MPI_IVE_CCL(&IveHandle, pstSrc, stBlob, &stCtrl, HI_FALSE);
     SAMPLE_CHECK_EXPR_RET(HI_SUCCESS != s32Ret,s32Ret,"Error(%#x),HI_MPI_IVE_CCL failed!\n",s32Ret);
-	
-	return s32Ret;
+    
+    return s32Ret;
 }
 
 /*************************************************
@@ -335,10 +335,10 @@ HI_S32 SAMPLE_IVE_Copy420SP(IVE_SRC_IMAGE_S *pstSrc, IVE_DST_IMAGE_S *pstDst)
     IVE_DST_DATA_S stData0Dst, stData1Dst;
 
     IVE_DMA_CTRL_S stCtrl;
-	memset(&stCtrl,0,sizeof(stCtrl));            
-	stCtrl.enMode = IVE_DMA_MODE_DIRECT_COPY;    
+    memset(&stCtrl,0,sizeof(stCtrl));            
+    stCtrl.enMode = IVE_DMA_MODE_DIRECT_COPY;    
     
-	stData0Src.u64VirAddr    = pstSrc->au64VirAddr[0];
+    stData0Src.u64VirAddr    = pstSrc->au64VirAddr[0];
     stData0Src.u64PhyAddr    = pstSrc->au64PhyAddr[0];
     stData0Src.u32Width      = pstSrc->u32Width;
     stData0Src.u32Height     = pstSrc->u32Height;
@@ -352,21 +352,21 @@ HI_S32 SAMPLE_IVE_Copy420SP(IVE_SRC_IMAGE_S *pstSrc, IVE_DST_IMAGE_S *pstDst)
 
     s32Ret = HI_MPI_IVE_DMA(&hIveHandle, &stData0Src, &stData0Dst,&stCtrl,HI_FALSE);
     SAMPLE_CHECK_EXPR_RET(HI_SUCCESS != s32Ret,s32Ret,"Error(%#x),HI_MPI_IVE_DMA failed!\n",s32Ret);
-	
-	stData1Src.u64VirAddr    = pstSrc->au64VirAddr[1];
-	stData1Src.u64PhyAddr    = pstSrc->au64PhyAddr[1];
-	stData1Src.u32Width      = pstSrc->u32Width;  
-	stData1Src.u32Height     = pstSrc->u32Height / 2; 
-	stData1Src.u32Stride     = pstSrc->au32Stride[1];
+    
+    stData1Src.u64VirAddr    = pstSrc->au64VirAddr[1];
+    stData1Src.u64PhyAddr    = pstSrc->au64PhyAddr[1];
+    stData1Src.u32Width      = pstSrc->u32Width;  
+    stData1Src.u32Height     = pstSrc->u32Height / 2; 
+    stData1Src.u32Stride     = pstSrc->au32Stride[1];
          
-	stData1Dst.u64VirAddr    = pstDst->au64VirAddr[1];
-	stData1Dst.u64PhyAddr    = pstDst->au64PhyAddr[1];
-	stData1Dst.u32Width      = pstDst->u32Width;  
-	stData1Dst.u32Height     = pstDst->u32Height / 2; 
-	stData1Dst.u32Stride     = pstDst->au32Stride[1];
+    stData1Dst.u64VirAddr    = pstDst->au64VirAddr[1];
+    stData1Dst.u64PhyAddr    = pstDst->au64PhyAddr[1];
+    stData1Dst.u32Width      = pstDst->u32Width;  
+    stData1Dst.u32Height     = pstDst->u32Height / 2; 
+    stData1Dst.u32Stride     = pstDst->au32Stride[1];
          
-	s32Ret = HI_MPI_IVE_DMA(&hIveHandle, &stData1Src, &stData1Dst,&stCtrl,HI_FALSE);
-	SAMPLE_CHECK_EXPR_RET(HI_SUCCESS != s32Ret,s32Ret,"Error(%#x),HI_MPI_IVE_DMA failed!\n",s32Ret);
+    s32Ret = HI_MPI_IVE_DMA(&hIveHandle, &stData1Src, &stData1Dst,&stCtrl,HI_FALSE);
+    SAMPLE_CHECK_EXPR_RET(HI_SUCCESS != s32Ret,s32Ret,"Error(%#x),HI_MPI_IVE_DMA failed!\n",s32Ret);
     return s32Ret;
 }	
 
@@ -383,7 +383,7 @@ Others:
 HI_U32 SAMPLE_IVE_CountNonZero(IVE_DST_MEM_INFO_S stCount, IVE_SRC_IMAGE_S *pstImg)
 {
     HI_S32 s32Ret;
-	HI_U32 Num;
+    HI_U32 Num;
     HI_U32* pu32Count = NULL;
     IVE_HANDLE IveHandle;
     HI_BOOL bBlock = HI_TRUE;
@@ -399,8 +399,8 @@ HI_U32 SAMPLE_IVE_CountNonZero(IVE_DST_MEM_INFO_S stCount, IVE_SRC_IMAGE_S *pstI
     }
     SAMPLE_CHECK_EXPR_RET(HI_SUCCESS != s32Ret,s32Ret,"Error(%#x),HI_MPI_IVE_Query failed!\n",s32Ret);
 
-	pu32Count = SAMPLE_COMM_IVE_CONVERT_64BIT_ADDR(HI_U32, stCount.u64VirAddr);
-	Num = *(pu32Count + 255);
+    pu32Count = SAMPLE_COMM_IVE_CONVERT_64BIT_ADDR(HI_U32, stCount.u64VirAddr);
+    Num = *(pu32Count + 255);
 
     return Num;
 }
@@ -852,10 +852,10 @@ HI_VOID SAMPLE_COMM_IVE_BlobToRect(IVE_CCBLOB_S *pstBlob, SAMPLE_RECT_ARRAY_S *p
                 }
             }
             
-			printf("[astRegion][index]%03d, [Left]%d, [Top]%d, [Right]%d, [Bottom]%d, [Area]%d\n", 
-						i, pstBlob->astRegion->u16Left, pstBlob->astRegion->u16Top, pstBlob->astRegion->u16Right, pstBlob->astRegion->u16Bottom, pstBlob->astRegion->u32Area);  
-			
-			if (HI_TRUE == bValid)
+            printf("[astRegion][index]%03d, [Left]%d, [Top]%d, [Right]%d, [Bottom]%d, [Area]%d\n", 
+                        i, pstBlob->astRegion->u16Left, pstBlob->astRegion->u16Top, pstBlob->astRegion->u16Right, pstBlob->astRegion->u16Bottom, pstBlob->astRegion->u32Area);  
+            
+            if (HI_TRUE == bValid)
             {
                 u16Num++;
             }
@@ -864,7 +864,7 @@ HI_VOID SAMPLE_COMM_IVE_BlobToRect(IVE_CCBLOB_S *pstBlob, SAMPLE_RECT_ARRAY_S *p
 
     pstRect->u16Num = u16Num;
 }
-	
+    
 /******************************************************************************
 * function : Create ive image
 ******************************************************************************/
@@ -890,7 +890,7 @@ HI_S32 SAMPLE_COMM_IVE_CreateImage(IVE_IMAGE_S* pstImg, IVE_IMAGE_TYPE_E enType,
         {
             u32Size = pstImg->au32Stride[0] * pstImg->u32Height;
             //printf("u32Size:%d\n", u32Size);
-			s32Ret = HI_MPI_SYS_MmzAlloc(&pstImg->au64PhyAddr[0], (HI_VOID**)&pstImg->au64VirAddr[0], NULL, HI_NULL, u32Size);
+            s32Ret = HI_MPI_SYS_MmzAlloc(&pstImg->au64PhyAddr[0], (HI_VOID**)&pstImg->au64VirAddr[0], NULL, HI_NULL, u32Size);
             if (s32Ret != HI_SUCCESS)
             {
                 SAMPLE_PRT("Mmz Alloc fail,Error(%#x)\n", s32Ret);
@@ -1056,7 +1056,7 @@ HI_S32 SAMPLE_COMM_IVE_CreateImageByCached(IVE_IMAGE_S* pstImg,
         }
         break;
         case IVE_IMAGE_TYPE_YUV420SP:
-		{
+        {
             u32Size = pstImg->au32Stride[0] * pstImg->u32Height * 3 / 2;
             s32Ret = HI_MPI_SYS_MmzAlloc_Cached(&pstImg->au64PhyAddr[0], (HI_VOID**)&pstImg->au64VirAddr[0], NULL, HI_NULL, u32Size);
             if (s32Ret != HI_SUCCESS)

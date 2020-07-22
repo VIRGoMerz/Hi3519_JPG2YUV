@@ -38,7 +38,7 @@ typedef struct hiSAMPLE_IVE_TEST_S
 {
     FILE* pFpDst;                       //save file
 
-	IVE_SRC_IMAGE_S stDst_YUV400;       //YUV400
+    IVE_SRC_IMAGE_S stDst_YUV400;       //YUV400
     IVE_SRC_IMAGE_S stDst_YUV420SP;     //YUV420SP
     IVE_SRC_IMAGE_S stDst_BGR;          //U8C3_PACKAGE(BGR)
 }SAMPLE_IVE_TEST_S;
@@ -48,7 +48,7 @@ static SAMPLE_IVE_TEST_S s_stTest;
 
 static HI_VOID SAMPLE_IVE_Test_Uninit(SAMPLE_IVE_TEST_S *pstTest)
 {
-	//yuv400
+    //yuv400
     IVE_MMZ_FREE(pstTest->stDst_YUV400.au64PhyAddr[0], pstTest->stDst_YUV400.au64VirAddr[0]);
     //yuv420
     IVE_MMZ_FREE(pstTest->stDst_YUV420SP.au64PhyAddr[0], pstTest->stDst_YUV420SP.au64VirAddr[0]);
@@ -60,18 +60,18 @@ static HI_VOID SAMPLE_IVE_Test_Uninit(SAMPLE_IVE_TEST_S *pstTest)
 
 static HI_S32 SAMPLE_IVE_Test_Init(SAMPLE_IVE_TEST_S *pstTest, HI_U32 u32Width, HI_U32 u32Height, HI_CHAR *pchDstFileName)
 {
-	HI_S32 s32Ret;
+    HI_S32 s32Ret;
 
-	memset(pstTest, 0, sizeof(SAMPLE_IVE_TEST_S));
+    memset(pstTest, 0, sizeof(SAMPLE_IVE_TEST_S));
  
-	s32Ret = HI_FAILURE;
+    s32Ret = HI_FAILURE;
 
     pstTest->pFpDst = fopen(pchDstFileName, "wb");
     SAMPLE_CHECK_EXPR_GOTO(NULL == pstTest->pFpDst, TEST_INIT_FAIL, "Error,Open file %s failed!\n", pchDstFileName);
 
     s32Ret = HI_SUCCESS;    
 
-	s32Ret = SAMPLE_COMM_IVE_CreateImage(&(pstTest->stDst_YUV400), IVE_IMAGE_TYPE_U8C1, u32Width, u32Height);
+    s32Ret = SAMPLE_COMM_IVE_CreateImage(&(pstTest->stDst_YUV400), IVE_IMAGE_TYPE_U8C1, u32Width, u32Height);
     SAMPLE_CHECK_EXPR_GOTO(HI_SUCCESS != s32Ret, TEST_INIT_FAIL, "Error(%#x),Create YUV400 image failed!\n", s32Ret);
      
     s32Ret = SAMPLE_COMM_IVE_CreateImage(&(pstTest->stDst_YUV420SP), IVE_IMAGE_TYPE_YUV420SP, u32Width, u32Height);
@@ -92,7 +92,7 @@ TEST_INIT_FAIL:
 
 static HI_S32 SAMPLE_IVE_ConvProc(SAMPLE_IVE_TEST_S* pstTest, Mat CV_Img)
 {
-	HI_S32 s32Ret = HI_SUCCESS;
+    HI_S32 s32Ret = HI_SUCCESS;
 
     if(CV_Img.channels() == 1)
     {
@@ -104,13 +104,13 @@ static HI_S32 SAMPLE_IVE_ConvProc(SAMPLE_IVE_TEST_S* pstTest, Mat CV_Img)
     else if (CV_Img.channels() == 3)
     {
         Mat2IveImage(&CV_Img, &pstTest->stDst_BGR);
-	    s32Ret = SAMPLE_IVE_BGR2YUV(&pstTest->stDst_BGR, &pstTest->stDst_YUV420SP);
+        s32Ret = SAMPLE_IVE_BGR2YUV(&pstTest->stDst_BGR, &pstTest->stDst_YUV420SP);
 
         s32Ret = SAMPLE_COMM_IVE_WriteFile(&pstTest->stDst_YUV420SP, pstTest->pFpDst);
         SAMPLE_CHECK_EXPR_RET(HI_SUCCESS != s32Ret,s32Ret,"Error(%#x),write file failed!\n",s32Ret);
     }
 
-	return s32Ret;
+    return s32Ret;
 }
 
 
@@ -122,9 +122,9 @@ HI_VOID JPG2YUV(Mat CV_Img, int ImageNum)
     //通道数
     cout << "channels:" << CV_Img.channels() << endl;
     //列宽
-	cout << "clos:" << CV_Img.cols << endl;
-	//行高
-	cout << "rows:" << CV_Img.rows << endl;
+    cout << "clos:" << CV_Img.cols << endl;
+    //行高
+    cout << "rows:" << CV_Img.rows << endl;
     */
    
     HI_U32 u32Width  = CV_Img.cols;
@@ -176,8 +176,8 @@ int main()
     for(int ImageNum = 0; ImageNum < (int)image_files.size(); ImageNum++)
     {
         cout << "convert " << image_files[ImageNum] << endl;
-   		CV_Img = imread(image_files[ImageNum]);
+           CV_Img = imread(image_files[ImageNum]);
         JPG2YUV(CV_Img, ImageNum);
     }
-	return 0;
+    return 0;
 }
