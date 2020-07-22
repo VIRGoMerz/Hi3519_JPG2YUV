@@ -176,7 +176,7 @@ int main()
     for(int ImageNum = 0; ImageNum < (int)image_files.size(); ImageNum++)
     {
         cout << "convert " << image_files[ImageNum] << endl;
-           CV_Img = imread(image_files[ImageNum]);
+        CV_Img = imread(image_files[ImageNum]);
         JPG2YUV(CV_Img, ImageNum);
     }
     return 0;
