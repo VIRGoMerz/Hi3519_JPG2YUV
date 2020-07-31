@@ -4,8 +4,8 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/merz/3519_build/JPG2YUV/src/JPG2YUV.cpp" "/home/merz/3519_build/JPG2YUV/build/CMakeFiles/demo.dir/src/JPG2YUV.cpp.o"
-  "/home/merz/3519_build/JPG2YUV/src/common/sample_comm_ive.cpp" "/home/merz/3519_build/JPG2YUV/build/CMakeFiles/demo.dir/src/common/sample_comm_ive.cpp.o"
+  "/home/merz/3519_build/Hi3519_JPG2YUV/src/JPG2YUV.cpp" "/home/merz/3519_build/Hi3519_JPG2YUV/build/CMakeFiles/demo.dir/src/JPG2YUV.cpp.o"
+  "/home/merz/3519_build/Hi3519_JPG2YUV/src/common/sample_comm_ive.cpp" "/home/merz/3519_build/Hi3519_JPG2YUV/build/CMakeFiles/demo.dir/src/common/sample_comm_ive.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

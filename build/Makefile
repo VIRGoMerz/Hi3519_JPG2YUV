@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/merz/3519_build/JPG2YUV
+CMAKE_SOURCE_DIR = /home/merz/3519_build/Hi3519_JPG2YUV
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/merz/3519_build/JPG2YUV/build
+CMAKE_BINARY_DIR = /home/merz/3519_build/Hi3519_JPG2YUV/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/merz/3519_build/JPG2YUV/build/CMakeFiles /home/merz/3519_build/JPG2YUV/build/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/merz/3519_build/Hi3519_JPG2YUV/build/CMakeFiles /home/merz/3519_build/Hi3519_JPG2YUV/build/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/merz/3519_build/JPG2YUV/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/merz/3519_build/Hi3519_JPG2YUV/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target

@@ -24,7 +24,7 @@
 
 2. 在 <kbd>data/images/JPG</kbd> 目录下放你需要转换的图片
 
-3. 在 `build` 目录下执行程序
+3. 在 <kbd>build</kbd> 目录下执行程序
 
 4. 转换好的 YUV 图片在 <kbd>data/images/YUV</kbd> 目录下
 

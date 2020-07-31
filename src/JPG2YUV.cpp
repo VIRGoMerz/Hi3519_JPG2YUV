@@ -114,7 +114,7 @@ static HI_S32 SAMPLE_IVE_ConvProc(SAMPLE_IVE_TEST_S* pstTest, Mat CV_Img)
 }
 
 
-HI_VOID JPG2YUV(Mat CV_Img, int ImageNum)
+HI_VOID JPG2YUV(Mat CV_Img, string name)
 {
     HI_S32 s32Ret = HI_SUCCESS;
 
@@ -131,8 +131,8 @@ HI_VOID JPG2YUV(Mat CV_Img, int ImageNum)
     HI_U32 u32Height = CV_Img.rows;
 
     HI_CHAR pchDstFileName[500];
-    //TODO:这边的命名还有点问题
-    snprintf(pchDstFileName, sizeof(pchDstFileName), "../data/images/YUV/%d.yuv", ImageNum);
+
+    snprintf(pchDstFileName, sizeof(pchDstFileName), "../data/images/YUV/%s_%dx%d.yuv", (HI_CHAR *)name.c_str(), u32Width, u32Height);
 
     memset(&s_stTest,0,sizeof(s_stTest));
     SAMPLE_COMM_IVE_CheckIveMpiInit();
@@ -177,7 +177,12 @@ int main()
     {
         cout << "convert " << image_files[ImageNum] << endl;
         CV_Img = imread(image_files[ImageNum]);
-        JPG2YUV(CV_Img, ImageNum);
+
+        string path = image_files[ImageNum];
+        string::size_type iPos = path.find_last_of('/') + 1;
+        string filename = path.substr(iPos, path.length() - iPos);
+        string name = filename.substr(0, filename.rfind("."));
+        JPG2YUV(CV_Img, name);
     }
     return 0;
 }

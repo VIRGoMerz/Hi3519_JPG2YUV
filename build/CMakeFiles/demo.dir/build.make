@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/merz/3519_build/JPG2YUV
+CMAKE_SOURCE_DIR = /home/merz/3519_build/Hi3519_JPG2YUV
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/merz/3519_build/JPG2YUV/build
+CMAKE_BINARY_DIR = /home/merz/3519_build/Hi3519_JPG2YUV/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/demo.dir/depend.make
@@ -59,16 +59,16 @@ include CMakeFiles/demo.dir/flags.make
 
 CMakeFiles/demo.dir/src/JPG2YUV.cpp.o: CMakeFiles/demo.dir/flags.make
 CMakeFiles/demo.dir/src/JPG2YUV.cpp.o: ../src/JPG2YUV.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/merz/3519_build/JPG2YUV/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/demo.dir/src/JPG2YUV.cpp.o"
-	arm-himix200-linux-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/demo.dir/src/JPG2YUV.cpp.o -c /home/merz/3519_build/JPG2YUV/src/JPG2YUV.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/merz/3519_build/Hi3519_JPG2YUV/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/demo.dir/src/JPG2YUV.cpp.o"
+	arm-himix200-linux-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/demo.dir/src/JPG2YUV.cpp.o -c /home/merz/3519_build/Hi3519_JPG2YUV/src/JPG2YUV.cpp
 
 CMakeFiles/demo.dir/src/JPG2YUV.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/demo.dir/src/JPG2YUV.cpp.i"
-	arm-himix200-linux-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/merz/3519_build/JPG2YUV/src/JPG2YUV.cpp > CMakeFiles/demo.dir/src/JPG2YUV.cpp.i
+	arm-himix200-linux-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/merz/3519_build/Hi3519_JPG2YUV/src/JPG2YUV.cpp > CMakeFiles/demo.dir/src/JPG2YUV.cpp.i
 
 CMakeFiles/demo.dir/src/JPG2YUV.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/demo.dir/src/JPG2YUV.cpp.s"
-	arm-himix200-linux-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/merz/3519_build/JPG2YUV/src/JPG2YUV.cpp -o CMakeFiles/demo.dir/src/JPG2YUV.cpp.s
+	arm-himix200-linux-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/merz/3519_build/Hi3519_JPG2YUV/src/JPG2YUV.cpp -o CMakeFiles/demo.dir/src/JPG2YUV.cpp.s
 
 CMakeFiles/demo.dir/src/JPG2YUV.cpp.o.requires:
 
@@ -83,16 +83,16 @@ CMakeFiles/demo.dir/src/JPG2YUV.cpp.o.provides.build: CMakeFiles/demo.dir/src/JP
 
 CMakeFiles/demo.dir/src/common/sample_comm_ive.cpp.o: CMakeFiles/demo.dir/flags.make
 CMakeFiles/demo.dir/src/common/sample_comm_ive.cpp.o: ../src/common/sample_comm_ive.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/merz/3519_build/JPG2YUV/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/demo.dir/src/common/sample_comm_ive.cpp.o"
-	arm-himix200-linux-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/demo.dir/src/common/sample_comm_ive.cpp.o -c /home/merz/3519_build/JPG2YUV/src/common/sample_comm_ive.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/merz/3519_build/Hi3519_JPG2YUV/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/demo.dir/src/common/sample_comm_ive.cpp.o"
+	arm-himix200-linux-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/demo.dir/src/common/sample_comm_ive.cpp.o -c /home/merz/3519_build/Hi3519_JPG2YUV/src/common/sample_comm_ive.cpp
 
 CMakeFiles/demo.dir/src/common/sample_comm_ive.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/demo.dir/src/common/sample_comm_ive.cpp.i"
-	arm-himix200-linux-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/merz/3519_build/JPG2YUV/src/common/sample_comm_ive.cpp > CMakeFiles/demo.dir/src/common/sample_comm_ive.cpp.i
+	arm-himix200-linux-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/merz/3519_build/Hi3519_JPG2YUV/src/common/sample_comm_ive.cpp > CMakeFiles/demo.dir/src/common/sample_comm_ive.cpp.i
 
 CMakeFiles/demo.dir/src/common/sample_comm_ive.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/demo.dir/src/common/sample_comm_ive.cpp.s"
-	arm-himix200-linux-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/merz/3519_build/JPG2YUV/src/common/sample_comm_ive.cpp -o CMakeFiles/demo.dir/src/common/sample_comm_ive.cpp.s
+	arm-himix200-linux-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/merz/3519_build/Hi3519_JPG2YUV/src/common/sample_comm_ive.cpp -o CMakeFiles/demo.dir/src/common/sample_comm_ive.cpp.s
 
 CMakeFiles/demo.dir/src/common/sample_comm_ive.cpp.o.requires:
 
@@ -117,7 +117,7 @@ demo: CMakeFiles/demo.dir/src/JPG2YUV.cpp.o
 demo: CMakeFiles/demo.dir/src/common/sample_comm_ive.cpp.o
 demo: CMakeFiles/demo.dir/build.make
 demo: CMakeFiles/demo.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/merz/3519_build/JPG2YUV/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable demo"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/merz/3519_build/Hi3519_JPG2YUV/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable demo"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/demo.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -135,6 +135,6 @@ CMakeFiles/demo.dir/clean:
 .PHONY : CMakeFiles/demo.dir/clean
 
 CMakeFiles/demo.dir/depend:
-	cd /home/merz/3519_build/JPG2YUV/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/merz/3519_build/JPG2YUV /home/merz/3519_build/JPG2YUV /home/merz/3519_build/JPG2YUV/build /home/merz/3519_build/JPG2YUV/build /home/merz/3519_build/JPG2YUV/build/CMakeFiles/demo.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/merz/3519_build/Hi3519_JPG2YUV/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/merz/3519_build/Hi3519_JPG2YUV /home/merz/3519_build/Hi3519_JPG2YUV /home/merz/3519_build/Hi3519_JPG2YUV/build /home/merz/3519_build/Hi3519_JPG2YUV/build /home/merz/3519_build/Hi3519_JPG2YUV/build/CMakeFiles/demo.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/demo.dir/depend
 

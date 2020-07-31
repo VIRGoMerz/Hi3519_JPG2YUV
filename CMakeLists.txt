@@ -85,5 +85,4 @@ add_executable(${PROJECT_NAME} ${SRC})
 
 #添加编译时的依赖库
 target_link_libraries(${PROJECT_NAME} -lopencv_world -lpthread -lrt -ldl -lm)
-#target_link_libraries(${PROJECT_NAME} --start-group -live -lmpi -lmd -lhdmi -lsecurec -lVoiceEngine -lupvqe -ldnvqe --end-group)
-target_link_libraries(${PROJECT_NAME} -live -lmpi -lmd -lhdmi -lsecurec -lVoiceEngine -lupvqe -ldnvqe)
+target_link_libraries(${PROJECT_NAME} libive.a libmpi.a libmd.a libhdmi.a libsecurec.a libVoiceEngine.a libupvqe.a libdnvqe.a)
