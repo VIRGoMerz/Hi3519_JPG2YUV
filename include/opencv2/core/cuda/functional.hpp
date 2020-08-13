@@ -58,6 +58,7 @@
 namespace cv { namespace cuda { namespace device
 {
     // Function Objects
+#ifdef CV_CXX11
     template<typename Argument, typename Result> struct unary_function
     {
         typedef Argument argument_type;
@@ -69,6 +70,10 @@ namespace cv { namespace cuda { namespace device
         typedef Argument2 second_argument_type;
         typedef Result result_type;
     };
+#else
+    template<typename Argument, typename Result> struct unary_function : public std::unary_function<Argument, Result> {};
+    template<typename Argument1, typename Argument2, typename Result> struct binary_function : public std::binary_function<Argument1, Argument2, Result> {};
+#endif
 
     // Arithmetic Operations
     template <typename T> struct plus : binary_function<T, T, T>
@@ -592,7 +597,7 @@ namespace cv { namespace cuda { namespace device
 
     template <typename T> struct thresh_trunc_func : unary_function<T, T>
     {
-        explicit __host__ __device__ __forceinline__ thresh_trunc_func(T thresh_, T maxVal_ = 0) : thresh(thresh_) {CV_UNUSED(maxVal_);}
+        explicit __host__ __device__ __forceinline__ thresh_trunc_func(T thresh_, T maxVal_ = 0) : thresh(thresh_) {(void)maxVal_;}
 
         __device__ __forceinline__ T operator()(typename TypeTraits<T>::ParameterType src) const
         {
@@ -608,7 +613,7 @@ namespace cv { namespace cuda { namespace device
 
     template <typename T> struct thresh_to_zero_func : unary_function<T, T>
     {
-        explicit __host__ __device__ __forceinline__ thresh_to_zero_func(T thresh_, T maxVal_ = 0) : thresh(thresh_) {CV_UNUSED(maxVal_);}
+        explicit __host__ __device__ __forceinline__ thresh_to_zero_func(T thresh_, T maxVal_ = 0) : thresh(thresh_) {(void)maxVal_;}
 
         __device__ __forceinline__ T operator()(typename TypeTraits<T>::ParameterType src) const
         {
@@ -624,7 +629,7 @@ namespace cv { namespace cuda { namespace device
 
     template <typename T> struct thresh_to_zero_inv_func : unary_function<T, T>
     {
-        explicit __host__ __device__ __forceinline__ thresh_to_zero_inv_func(T thresh_, T maxVal_ = 0) : thresh(thresh_) {CV_UNUSED(maxVal_);}
+        explicit __host__ __device__ __forceinline__ thresh_to_zero_inv_func(T thresh_, T maxVal_ = 0) : thresh(thresh_) {(void)maxVal_;}
 
         __device__ __forceinline__ T operator()(typename TypeTraits<T>::ParameterType src) const
         {

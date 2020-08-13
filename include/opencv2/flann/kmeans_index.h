@@ -276,7 +276,7 @@ public:
     public:
         KMeansDistanceComputer(Distance _distance, const Matrix<ElementType>& _dataset,
             const int _branching, const int* _indices, const Matrix<double>& _dcenters, const size_t _veclen,
-            int* _count, int* _belongs_to, std::vector<DistanceType>& _radiuses, bool& _converged)
+            int* _count, int* _belongs_to, std::vector<DistanceType>& _radiuses, bool& _converged, cv::Mutex& _mtx)
             : distance(_distance)
             , dataset(_dataset)
             , branching(_branching)
@@ -287,6 +287,7 @@ public:
             , belongs_to(_belongs_to)
             , radiuses(_radiuses)
             , converged(_converged)
+            , mtx(_mtx)
         {
         }
 
@@ -310,10 +311,12 @@ public:
                     radiuses[new_centroid] = sq_dist;
                 }
                 if (new_centroid != belongs_to[i]) {
-                    CV_XADD(&count[belongs_to[i]], -1);
-                    CV_XADD(&count[new_centroid], 1);
+                    count[belongs_to[i]]--;
+                    count[new_centroid]++;
                     belongs_to[i] = new_centroid;
+                    mtx.lock();
                     converged = false;
+                    mtx.unlock();
                 }
             }
         }
@@ -329,6 +332,7 @@ public:
         int* belongs_to;
         std::vector<DistanceType>& radiuses;
         bool& converged;
+        cv::Mutex& mtx;
         KMeansDistanceComputer& operator=( const KMeansDistanceComputer & ) { return *this; }
     };
 
@@ -797,7 +801,8 @@ private:
             }
 
             // reassign points to clusters
-            KMeansDistanceComputer invoker(distance_, dataset_, branching, indices, dcenters, veclen_, count, belongs_to, radiuses, converged);
+            cv::Mutex mtx;
+            KMeansDistanceComputer invoker(distance_, dataset_, branching, indices, dcenters, veclen_, count, belongs_to, radiuses, converged, mtx);
             parallel_for_(cv::Range(0, (int)indices_length), invoker);
 
             for (int i=0; i<branching; ++i) {

@@ -108,8 +108,8 @@ block and to save contents of the register to memory block.
 These operations allow to reorder or recombine elements in one or multiple vectors.
 
 - Interleave, deinterleave (2, 3 and 4 channels): @ref v_load_deinterleave, @ref v_store_interleave
-- Expand: @ref v_load_expand, @ref v_load_expand_q, @ref v_expand, @ref v_expand_low, @ref v_expand_high
-- Pack: @ref v_pack, @ref v_pack_u, @ref v_pack_b, @ref v_rshr_pack, @ref v_rshr_pack_u,
+- Expand: @ref v_load_expand, @ref v_load_expand_q, @ref v_expand
+- Pack: @ref v_pack, @ref v_pack_u, @ref v_rshr_pack, @ref v_rshr_pack_u,
 @ref v_pack_store, @ref v_pack_u_store, @ref v_rshr_pack_store, @ref v_rshr_pack_u_store
 - Recombine: @ref v_zip, @ref v_recombine, @ref v_combine_low, @ref v_combine_high
 - Extract: @ref v_extract
@@ -159,7 +159,7 @@ Most of these operations return only one value.
 ### Other math
 
 - Some frequent operations: @ref v_sqrt, @ref v_invsqrt, @ref v_magnitude, @ref v_sqr_magnitude
-- Absolute values: @ref v_abs, @ref v_absdiff, @ref v_absdiffs
+- Absolute values: @ref v_abs, @ref v_absdiff
 
 ### Conversions
 
@@ -185,26 +185,21 @@ Regular integers:
 |load, store        | x | x | x | x | x | x |
 |interleave         | x | x | x | x | x | x |
 |expand             | x | x | x | x | x | x |
-|expand_low         | x | x | x | x | x | x |
-|expand_high        | x | x | x | x | x | x |
 |expand_q           | x | x |   |   |   |   |
 |add, sub           | x | x | x | x | x | x |
 |add_wrap, sub_wrap | x | x | x | x |   |   |
-|mul_wrap           | x | x | x | x |   |   |
-|mul                | x | x | x | x | x | x |
-|mul_expand         | x | x | x | x | x |   |
+|mul                |   |   | x | x | x | x |
+|mul_expand         |   |   | x | x | x |   |
 |compare            | x | x | x | x | x | x |
 |shift              |   |   | x | x | x | x |
 |dotprod            |   |   |   | x |   |   |
 |logical            | x | x | x | x | x | x |
 |min, max           | x | x | x | x | x | x |
 |absdiff            | x | x | x | x | x | x |
-|absdiffs           |   | x |   | x |   |   |
 |reduce             |   |   |   |   | x | x |
 |mask               | x | x | x | x | x | x |
 |pack               | x | x | x | x | x | x |
 |pack_u             | x |   | x |   |   |   |
-|pack_b             | x |   |   |   |   |   |
 |unpack             | x | x | x | x | x | x |
 |extract            | x | x | x | x | x | x |
 |rotate (lanes)     | x | x | x | x | x | x |
@@ -683,28 +678,9 @@ OPENCV_HAL_IMPL_CMP_OP(==)
 For all types except 64-bit integer values. */
 OPENCV_HAL_IMPL_CMP_OP(!=)
 
-template<int n>
-inline v_reg<float, n> v_not_nan(const v_reg<float, n>& a)
-{
-    typedef typename V_TypeTraits<float>::int_type itype;
-    v_reg<float, n> c;
-    for (int i = 0; i < n; i++)
-        c.s[i] = V_TypeTraits<float>::reinterpret_from_int((itype)-(int)(a.s[i] == a.s[i]));
-    return c;
-}
-template<int n>
-inline v_reg<double, n> v_not_nan(const v_reg<double, n>& a)
-{
-    typedef typename V_TypeTraits<double>::int_type itype;
-    v_reg<double, n> c;
-    for (int i = 0; i < n; i++)
-        c.s[i] = V_TypeTraits<double>::reinterpret_from_int((itype)-(int)(a.s[i] == a.s[i]));
-    return c;
-}
-
 //! @brief Helper macro
 //! @ingroup core_hal_intrin_impl
-#define OPENCV_HAL_IMPL_ARITHM_OP(func, bin_op, cast_op, _Tp2) \
+#define OPENCV_HAL_IMPL_ADD_SUB_OP(func, bin_op, cast_op, _Tp2) \
 template<typename _Tp, int n> \
 inline v_reg<_Tp2, n> func(const v_reg<_Tp, n>& a, const v_reg<_Tp, n>& b) \
 { \
@@ -718,17 +694,12 @@ inline v_reg<_Tp2, n> func(const v_reg<_Tp, n>& a, const v_reg<_Tp, n>& b) \
 /** @brief Add values without saturation
 
 For 8- and 16-bit integer values. */
-OPENCV_HAL_IMPL_ARITHM_OP(v_add_wrap, +, (_Tp), _Tp)
+OPENCV_HAL_IMPL_ADD_SUB_OP(v_add_wrap, +, (_Tp), _Tp)
 
 /** @brief Subtract values without saturation
 
 For 8- and 16-bit integer values. */
-OPENCV_HAL_IMPL_ARITHM_OP(v_sub_wrap, -, (_Tp), _Tp)
-
-/** @brief Multiply values without saturation
-
-For 8- and 16-bit integer values. */
-OPENCV_HAL_IMPL_ARITHM_OP(v_mul_wrap, *, (_Tp), _Tp)
+OPENCV_HAL_IMPL_ADD_SUB_OP(v_sub_wrap, -, (_Tp), _Tp)
 
 //! @cond IGNORED
 template<typename T> inline T _absdiff(T a, T b)
@@ -780,19 +751,6 @@ inline v_float64x2 v_absdiff(const v_float64x2& a, const v_float64x2& b)
     v_float64x2 c;
     for( int i = 0; i < c.nlanes; i++ )
         c.s[i] = _absdiff(a.s[i], b.s[i]);
-    return c;
-}
-
-/** @brief Saturating absolute difference
-
-Returns \f$ saturate(|a - b|) \f$ .
-For 8-, 16-bit signed integer source types. */
-template<typename _Tp, int n>
-inline v_reg<_Tp, n> v_absdiffs(const v_reg<_Tp, n>& a, const v_reg<_Tp, n>& b)
-{
-    v_reg<_Tp, n> c;
-    for( int i = 0; i < n; i++)
-        c.s[i] = saturate_cast<_Tp>(std::abs(a.s[i] - b.s[i]));
     return c;
 }
 
@@ -933,20 +891,6 @@ template<typename _Tp, int n> inline void v_mul_expand(const v_reg<_Tp, n>& a, c
     }
 }
 
-/** @brief Multiply and extract high part
-
-Multiply values two registers and store high part of the results.
-Implemented only for 16-bit source types (v_int16x8, v_uint16x8). Returns \f$ a*b >> 16 \f$
-*/
-template<typename _Tp, int n> inline v_reg<_Tp, n> v_mul_hi(const v_reg<_Tp, n>& a, const v_reg<_Tp, n>& b)
-{
-    typedef typename V_TypeTraits<_Tp>::w_type w_type;
-    v_reg<_Tp, n> c;
-    for (int i = 0; i < n; i++)
-        c.s[i] = (_Tp)(((w_type)a.s[i] * b.s[i]) >> sizeof(_Tp)*8);
-    return c;
-}
-
 //! @cond IGNORED
 template<typename _Tp, int n> inline void v_hsum(const v_reg<_Tp, n>& a,
                                                  v_reg<typename V_TypeTraits<_Tp>::w_type, n/2>& c)
@@ -1063,21 +1007,6 @@ inline v_float32x4 v_reduce_sum4(const v_float32x4& a, const v_float32x4& b,
     return r;
 }
 
-/** @brief Sum absolute differences of values
-
-Scheme:
-@code
-{A1 A2 A3 ...} {B1 B2 B3 ...} => sum{ABS(A1-B1),abs(A2-B2),abs(A3-B3),...}
-@endcode
-For all types except 64-bit types.*/
-template<typename _Tp, int n> inline typename V_TypeTraits< typename V_TypeTraits<_Tp>::abs_type >::sum_type v_reduce_sad(const v_reg<_Tp, n>& a, const v_reg<_Tp, n>& b)
-{
-    typename V_TypeTraits< typename V_TypeTraits<_Tp>::abs_type >::sum_type c = _absdiff(a.s[0], b.s[0]);
-    for (int i = 1; i < n; i++)
-        c += _absdiff(a.s[i], b.s[i]);
-    return c;
-}
-
 /** @brief Get negative values mask
 
 Returned value is a bit mask with bits set to 1 on places corresponding to negative packed values indexes.
@@ -1161,44 +1090,6 @@ template<typename _Tp, int n> inline void v_expand(const v_reg<_Tp, n>& a,
         b0.s[i] = a.s[i];
         b1.s[i] = a.s[i+(n/2)];
     }
-}
-
-/** @brief Expand lower values to the wider pack type
-
-Same as cv::v_expand, but return lower half of the vector.
-
-Scheme:
-@code
- int32x4     int64x2
-{A B C D} ==> {A B}
-@endcode */
-template<typename _Tp, int n>
-inline v_reg<typename V_TypeTraits<_Tp>::w_type, n/2>
-v_expand_low(const v_reg<_Tp, n>& a)
-{
-    v_reg<typename V_TypeTraits<_Tp>::w_type, n/2> b;
-    for( int i = 0; i < (n/2); i++ )
-        b.s[i] = a.s[i];
-    return b;
-}
-
-/** @brief Expand higher values to the wider pack type
-
-Same as cv::v_expand_low, but expand higher half of the vector instead.
-
-Scheme:
-@code
- int32x4     int64x2
-{A B C D} ==> {C D}
-@endcode */
-template<typename _Tp, int n>
-inline v_reg<typename V_TypeTraits<_Tp>::w_type, n/2>
-v_expand_high(const v_reg<_Tp, n>& a)
-{
-    v_reg<typename V_TypeTraits<_Tp>::w_type, n/2> b;
-    for( int i = 0; i < (n/2); i++ )
-        b.s[i] = a.s[i+(n/2)];
-    return b;
 }
 
 //! @cond IGNORED
@@ -1662,18 +1553,6 @@ template<int n> inline v_reg<int, n> v_round(const v_reg<float, n>& a)
     return c;
 }
 
-/** @overload */
-template<int n> inline v_reg<int, n*2> v_round(const v_reg<double, n>& a, const v_reg<double, n>& b)
-{
-    v_reg<int, n*2> c;
-    for( int i = 0; i < n; i++ )
-    {
-        c.s[i] = cvRound(a.s[i]);
-        c.s[i+n] = cvRound(b.s[i]);
-    }
-    return c;
-}
-
 /** @brief Floor
 
 Floor each value. Input type is float vector ==> output type is int vector.*/
@@ -2120,103 +1999,6 @@ OPENCV_HAL_IMPL_C_RSHR_PACK_STORE(v_int16x8, short, v_uint8x16, uchar, pack_u, s
 OPENCV_HAL_IMPL_C_RSHR_PACK_STORE(v_int32x4, int, v_uint16x8, ushort, pack_u, saturate_cast)
 //! @}
 
-//! @cond IGNORED
-template<typename _Tpm, typename _Tp, int n>
-inline void _pack_b(_Tpm* mptr, const v_reg<_Tp, n>& a, const v_reg<_Tp, n>& b)
-{
-    for (int i = 0; i < n; ++i)
-    {
-        mptr[i] = (_Tpm)a.s[i];
-        mptr[i + n] = (_Tpm)b.s[i];
-    }
-}
-//! @endcond
-
-//! @name Pack boolean values
-//! @{
-//! @brief Pack boolean values from multiple vectors to one unsigned 8-bit integer vector
-//!
-//! @note Must provide valid boolean values to guarantee same result for all architectures.
-
-/** @brief
-//! For 16-bit boolean values
-
-Scheme:
-@code
-a  {0xFFFF 0 0 0xFFFF 0 0xFFFF 0xFFFF 0}
-b  {0xFFFF 0 0xFFFF 0 0 0xFFFF 0 0xFFFF}
-===============
-{
-   0xFF 0 0 0xFF 0 0xFF 0xFF 0
-   0xFF 0 0xFF 0 0 0xFF 0 0xFF
-}
-@endcode */
-
-inline v_uint8x16 v_pack_b(const v_uint16x8& a, const v_uint16x8& b)
-{
-    v_uint8x16 mask;
-    _pack_b(mask.s, a, b);
-    return mask;
-}
-
-/** @overload
-For 32-bit boolean values
-
-Scheme:
-@code
-a  {0xFFFF.. 0 0 0xFFFF..}
-b  {0 0xFFFF.. 0xFFFF.. 0}
-c  {0xFFFF.. 0 0xFFFF.. 0}
-d  {0 0xFFFF.. 0 0xFFFF..}
-===============
-{
-   0xFF 0 0 0xFF 0 0xFF 0xFF 0
-   0xFF 0 0xFF 0 0 0xFF 0 0xFF
-}
-@endcode */
-
-inline v_uint8x16 v_pack_b(const v_uint32x4& a, const v_uint32x4& b,
-                           const v_uint32x4& c, const v_uint32x4& d)
-{
-    v_uint8x16 mask;
-    _pack_b(mask.s, a, b);
-    _pack_b(mask.s + 8, c, d);
-    return mask;
-}
-
-/** @overload
-For 64-bit boolean values
-
-Scheme:
-@code
-a  {0xFFFF.. 0}
-b  {0 0xFFFF..}
-c  {0xFFFF.. 0}
-d  {0 0xFFFF..}
-
-e  {0xFFFF.. 0}
-f  {0xFFFF.. 0}
-g  {0 0xFFFF..}
-h  {0 0xFFFF..}
-===============
-{
-   0xFF 0 0 0xFF 0xFF 0 0 0xFF
-   0xFF 0 0xFF 0 0 0xFF 0 0xFF
-}
-@endcode */
-inline v_uint8x16 v_pack_b(const v_uint64x2& a, const v_uint64x2& b, const v_uint64x2& c,
-                           const v_uint64x2& d, const v_uint64x2& e, const v_uint64x2& f,
-                           const v_uint64x2& g, const v_uint64x2& h)
-{
-    v_uint8x16 mask;
-    _pack_b(mask.s, a, b);
-    _pack_b(mask.s + 4, c, d);
-    _pack_b(mask.s + 8, e, f);
-    _pack_b(mask.s + 12, g, h);
-    return mask;
-}
-//! @}
-
 /** @brief Matrix multiplication
 
 Scheme:
@@ -2264,28 +2046,6 @@ inline v_float32x4 v_matmuladd(const v_float32x4& v, const v_float32x4& m0,
                        v.s[0]*m0.s[1] + v.s[1]*m1.s[1] + v.s[2]*m2.s[1] + m3.s[1],
                        v.s[0]*m0.s[2] + v.s[1]*m1.s[2] + v.s[2]*m2.s[2] + m3.s[2],
                        v.s[0]*m0.s[3] + v.s[1]*m1.s[3] + v.s[2]*m2.s[3] + m3.s[3]);
-}
-
-////// FP16 suport ///////
-
-inline v_reg<float, V_TypeTraits<float>::nlanes128>
-v_load_expand(const float16_t* ptr)
-{
-    v_reg<float, V_TypeTraits<float>::nlanes128> v;
-    for( int i = 0; i < v.nlanes; i++ )
-    {
-        v.s[i] = ptr[i];
-    }
-    return v;
-}
-
-inline void
-v_pack_store(float16_t* ptr, v_reg<float, V_TypeTraits<float>::nlanes128>& v)
-{
-    for( int i = 0; i < v.nlanes; i++ )
-    {
-        ptr[i] = float16_t(v.s[i]);
-    }
 }
 
 inline void v_cleanup() {}

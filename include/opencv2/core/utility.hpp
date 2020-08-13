@@ -56,10 +56,8 @@
 #include "opencv2/core.hpp"
 #include <ostream>
 
+#ifdef CV_CXX11
 #include <functional>
-
-#if !defined(_M_CEE)
-#include <mutex>  // std::mutex, std::lock_guard
 #endif
 
 namespace cv
@@ -519,26 +517,9 @@ static inline size_t divUp(size_t a, unsigned int b)
     return (a + b - 1) / b;
 }
 
-/** @brief Round first value up to the nearest multiple of second value.
-
-Use this function instead of `ceil((float)a / b) * b` expressions.
-
-@sa divUp
-*/
-static inline int roundUp(int a, unsigned int b)
-{
-    CV_DbgAssert(a >= 0);
-    return a + b - 1 - (a + b -1) % b;
-}
-/** @overload */
-static inline size_t roundUp(size_t a, unsigned int b)
-{
-    return a + b - 1 - (a + b - 1) % b;
-}
-
 /** @brief Enables or disables the optimized code.
 
-The function can be used to dynamically turn on and off optimized dispatched code (code that uses SSE4.2, AVX/AVX2,
+The function can be used to dynamically turn on and off optimized code (code that uses SSE2, AVX,
 and other instructions on the platforms that support it). It sets a global flag that is further
 checked by OpenCV functions. Since the flag is not checked in the inner OpenCV loops, it is only
 safe to call the function on the very top level in your application where you can be sure that no
@@ -574,6 +555,7 @@ public:
 */
 CV_EXPORTS void parallel_for_(const Range& range, const ParallelLoopBody& body, double nstripes=-1.);
 
+#ifdef CV_CXX11
 class ParallelLoopBodyLambdaWrapper : public ParallelLoopBody
 {
 private:
@@ -593,6 +575,7 @@ inline void parallel_for_(const Range& range, std::function<void(const Range&)> 
 {
     parallel_for_(range, ParallelLoopBodyLambdaWrapper(functor), nstripes);
 }
+#endif
 
 /////////////////////////////// forEach method of cv::Mat ////////////////////////////
 template<typename _Tp, typename Functor> inline
@@ -693,10 +676,34 @@ void Mat::forEach_impl(const Functor& operation) {
 
 /////////////////////////// Synchronization Primitives ///////////////////////////////
 
-#if !defined(_M_CEE)
-typedef std::recursive_mutex Mutex;
-typedef std::lock_guard<cv::Mutex> AutoLock;
-#endif
+class CV_EXPORTS Mutex
+{
+public:
+    Mutex();
+    ~Mutex();
+    Mutex(const Mutex& m);
+    Mutex& operator = (const Mutex& m);
+
+    void lock();
+    bool trylock();
+    void unlock();
+
+    struct Impl;
+protected:
+    Impl* impl;
+};
+
+class CV_EXPORTS AutoLock
+{
+public:
+    AutoLock(Mutex& m) : mutex(&m) { mutex->lock(); }
+    ~AutoLock() { mutex->unlock(); }
+protected:
+    Mutex* mutex;
+private:
+    AutoLock(const AutoLock&);
+    AutoLock& operator = (const AutoLock&);
+};
 
 // TLS interface
 class CV_EXPORTS TLSDataContainer
@@ -706,10 +713,17 @@ protected:
     virtual ~TLSDataContainer();
 
     void  gatherData(std::vector<void*> &data) const;
+#if OPENCV_ABI_COMPATIBILITY > 300
     void* getData() const;
     void  release();
 
 private:
+#else
+    void  release();
+
+public:
+    void* getData() const;
+#endif
     virtual void* createDataInstance() const = 0;
     virtual void  deleteDataInstance(void* pData) const = 0;
 
@@ -964,8 +978,8 @@ public:
     void printErrors() const;
 
 protected:
-    void getByName(const String& name, bool space_delete, Param type, void* dst) const;
-    void getByIndex(int index, bool space_delete, Param type, void* dst) const;
+    void getByName(const String& name, bool space_delete, int type, void* dst) const;
+    void getByIndex(int index, bool space_delete, int type, void* dst) const;
 
     struct Impl;
     Impl* impl;
@@ -1073,6 +1087,15 @@ AutoBuffer<_Tp, fixed_size>::resize(size_t _size)
 template<typename _Tp, size_t fixed_size> inline size_t
 AutoBuffer<_Tp, fixed_size>::size() const
 { return sz; }
+
+template<> inline std::string CommandLineParser::get<std::string>(int index, bool space_delete) const
+{
+    return get<String>(index, space_delete);
+}
+template<> inline std::string CommandLineParser::get<std::string>(const String& name, bool space_delete) const
+{
+    return get<String>(name, space_delete);
+}
 
 //! @endcond
 
@@ -1234,74 +1257,7 @@ enum FLAGS
 CV_EXPORTS void       setFlags(FLAGS modeFlags);
 static inline void    setFlags(int modeFlags) { setFlags((FLAGS)modeFlags); }
 CV_EXPORTS FLAGS      getFlags();
-
-} // namespace instr
-
-
-namespace samples {
-
-//! @addtogroup core_utils_samples
-// This section describes utility functions for OpenCV samples.
-//
-// @note Implementation of these utilities is not thread-safe.
-//
-//! @{
-
-/** @brief Try to find requested data file
-
-Search directories:
-
-1. Directories passed via `addSamplesDataSearchPath()`
-2. OPENCV_SAMPLES_DATA_PATH_HINT environment variable
-3. OPENCV_SAMPLES_DATA_PATH environment variable
-   If parameter value is not empty and nothing is found then stop searching.
-4. Detects build/install path based on:
-   a. current working directory (CWD)
-   b. and/or binary module location (opencv_core/opencv_world, doesn't work with static linkage)
-5. Scan `<source>/{,data,samples/data}` directories if build directory is detected or the current directory is in source tree.
-6. Scan `<install>/share/OpenCV` directory if install directory is detected.
-
-@see cv::utils::findDataFile
-
-@param relative_path Relative path to data file
-@param required Specify "file not found" handling.
-       If true, function prints information message and raises cv::Exception.
-       If false, function returns empty result
-@param silentMode Disables messages
-@return Returns path (absolute or relative to the current directory) or empty string if file is not found
-*/
-CV_EXPORTS_W cv::String findFile(const cv::String& relative_path, bool required = true, bool silentMode = false);
-
-CV_EXPORTS_W cv::String findFileOrKeep(const cv::String& relative_path, bool silentMode = false);
-
-inline cv::String findFileOrKeep(const cv::String& relative_path, bool silentMode)
-{
-    cv::String res = findFile(relative_path, false, silentMode);
-    if (res.empty())
-        return relative_path;
-    return res;
 }
-
-/** @brief Override search data path by adding new search location
-
-Use this only to override default behavior
-Passed paths are used in LIFO order.
-
-@param path Path to used samples data
-*/
-CV_EXPORTS_W void addSamplesDataSearchPath(const cv::String& path);
-
-/** @brief Append samples search data sub directory
-
-General usage is to add OpenCV modules name (`<opencv_contrib>/modules/<name>/samples/data` -> `<name>/samples/data` + `modules/<name>/samples/data`).
-Passed subdirectories are used in LIFO order.
-
-@param subdir samples data sub directory
-*/
-CV_EXPORTS_W void addSamplesDataSearchSubDirectory(const cv::String& subdir);
-
-//! @}
-} // namespace samples
 
 namespace utils {
 
@@ -1310,5 +1266,9 @@ CV_EXPORTS int getThreadID();
 } // namespace
 
 } //namespace cv
+
+#ifndef DISABLE_OPENCV_24_COMPATIBILITY
+#include "opencv2/core/core_c.h"
+#endif
 
 #endif //OPENCV_CORE_UTILITY_H

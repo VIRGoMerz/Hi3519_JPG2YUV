@@ -130,21 +130,19 @@ VSX_FINLINE(rt) fnm(const rg& a, const rg& b)  \
 #       undef vec_mul
 #   endif
 /*
- * there's no a direct instruction for supporting 8-bit, 16-bit multiplication in ISA 2.07,
+ * there's no a direct instruction for supporting 16-bit multiplication in ISA 2.07,
  * XLC Implement it by using instruction "multiply even", "multiply odd" and "permute"
+ * todo: Do I need to support 8-bit ?
 **/
-#   define VSX_IMPL_MULH(Tvec, cperm)                                        \
-    VSX_FINLINE(Tvec) vec_mul(const Tvec& a, const Tvec& b)                  \
-    {                                                                        \
-        static const vec_uchar16 ev_od = {cperm};                            \
-        return vec_perm((Tvec)vec_mule(a, b), (Tvec)vec_mulo(a, b), ev_od);  \
+#   define VSX_IMPL_MULH(Tvec, Tcast)                                               \
+    VSX_FINLINE(Tvec) vec_mul(const Tvec& a, const Tvec& b)                         \
+    {                                                                               \
+        static const vec_uchar16 even_perm = {0, 1, 16, 17, 4, 5, 20, 21,           \
+                                              8, 9, 24, 25, 12, 13, 28, 29};        \
+        return vec_perm(Tcast(vec_mule(a, b)), Tcast(vec_mulo(a, b)), even_perm);   \
     }
-    #define VSX_IMPL_MULH_P16 0, 16, 2, 18, 4, 20, 6, 22, 8, 24, 10, 26, 12, 28, 14, 30
-    VSX_IMPL_MULH(vec_char16,  VSX_IMPL_MULH_P16)
-    VSX_IMPL_MULH(vec_uchar16, VSX_IMPL_MULH_P16)
-    #define VSX_IMPL_MULH_P8 0, 1, 16, 17, 4, 5, 20, 21, 8, 9, 24, 25, 12, 13, 28, 29
-    VSX_IMPL_MULH(vec_short8,  VSX_IMPL_MULH_P8)
-    VSX_IMPL_MULH(vec_ushort8, VSX_IMPL_MULH_P8)
+    VSX_IMPL_MULH(vec_short8,  vec_short8_c)
+    VSX_IMPL_MULH(vec_ushort8, vec_ushort8_c)
     // vmuluwm can be used for unsigned or signed integers, that's what they said
     VSX_IMPL_2VRG(vec_int4,  vec_int4,  vmuluwm, vec_mul)
     VSX_IMPL_2VRG(vec_uint4, vec_uint4, vmuluwm, vec_mul)
@@ -205,7 +203,7 @@ VSX_FINLINE(rt) fnm(const rg& a, const rg& b)  \
 
 #if __GNUG__ < 5
 // vec_xxpermdi in gcc4 missing little-endian supports just like clang
-#   define vec_permi(a, b, c) vec_xxpermdi(b, a, (3 ^ (((c) & 1) << 1 | (c) >> 1)))
+#   define vec_permi(a, b, c) vec_xxpermdi(b, a, (3 ^ ((c & 1) << 1 | c >> 1)))
 #else
 #   define vec_permi vec_xxpermdi
 #endif // __GNUG__ < 5
@@ -322,7 +320,7 @@ VSX_FINLINE(rt) fnm(const rg& a) { return __builtin_convertvector(a, rt); }
 #   define vec_xxsldwi(a, b, c) vec_sld(a, b, (c) * 4)
 #else
 // vec_xxpermdi is missing little-endian supports in clang 4 just like gcc4
-#   define vec_permi(a, b, c) vec_xxpermdi(b, a, (3 ^ (((c) & 1) << 1 | (c) >> 1)))
+#   define vec_permi(a, b, c) vec_xxpermdi(b, a, (3 ^ ((c & 1) << 1 | c >> 1)))
 #endif // __clang_major__ < 5
 
 // shift left double by word immediate
@@ -468,7 +466,7 @@ VSX_IMPL_CONV_EVEN_2_4(vec_uint4,  vec_double2, vec_ctu, vec_ctuo)
     VSX_FINLINE(rt) fnm(const rg& a, int only_truncate) \
     {                                                   \
         assert(only_truncate == 0);                     \
-        CV_UNUSED(only_truncate);                            \
+        (void)only_truncate;                            \
         return fn2(a);                                  \
     }
     VSX_IMPL_CONV_2VARIANT(vec_int4,   vec_float4,  vec_cts, vec_cts)

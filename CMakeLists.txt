@@ -84,5 +84,5 @@ aux_source_directory(${CMAKE_SOURCE_DIR}/src/common/. SRC)
 add_executable(${PROJECT_NAME} ${SRC}) 
 
 #添加编译时的依赖库
-target_link_libraries(${PROJECT_NAME} -lopencv_world -lpthread -lrt -ldl -lm)
+target_link_libraries(${PROJECT_NAME} libopencv_world.a libIlmImf.a liblibjasper.a liblibjpeg-turbo.a liblibpng.a liblibtiff.a liblibwebp.a libzlib.a -lpthread -lrt -ldl -lm)
 target_link_libraries(${PROJECT_NAME} libive.a libmpi.a libmd.a libhdmi.a libsecurec.a libVoiceEngine.a libupvqe.a libdnvqe.a)

@@ -1,3 +1,0 @@
-/home/merz/3519_build/Hi3519_JPG2YUV/build/CMakeFiles/rebuild_cache.dir
-/home/merz/3519_build/Hi3519_JPG2YUV/build/CMakeFiles/demo.dir
-/home/merz/3519_build/Hi3519_JPG2YUV/build/CMakeFiles/edit_cache.dir
